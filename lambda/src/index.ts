@@ -1,7 +1,7 @@
-import { getAccount } from "./aws-sts";
 import { getBudgets } from "./aws-budget";
-import { sendToSlack } from "./slack-client";
+import { getAccount } from "./aws-sts";
 import { mapBudgetsToSlackBlocks } from "./mapBudgetsToSlackBlocks";
+import { sendToSlack } from "./slack-client";
 
 export async function handler(event: unknown): Promise<void> {
   console.log(JSON.stringify(event));
@@ -13,8 +13,8 @@ export async function handler(event: unknown): Promise<void> {
     const accountId = await getAccount();
     const budgets = await getBudgets(accountId);
     const slackMessage = mapBudgetsToSlackBlocks(budgets);
-    const respose = await sendToSlack(slackWebhookUrl, slackMessage);
-    console.log("slack response", respose);
+    const response = await sendToSlack(slackWebhookUrl, slackMessage);
+    console.log("slack response", response);
   } catch (e) {
     console.error(e);
   }

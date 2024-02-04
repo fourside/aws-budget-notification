@@ -4,10 +4,10 @@ export async function sendToSlack(
   webhookUrl: string,
   slackMessage: SlackBlocks
 ): Promise<unknown> {
-  const respose = await fetch(webhookUrl, {
+  const response = await fetch(webhookUrl, {
     method: "POST",
     body: JSON.stringify(slackMessage),
     headers: { "Content-Type": "application/json" },
   });
-  return await respose.json();
+  return await response.text();
 }

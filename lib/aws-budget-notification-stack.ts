@@ -4,7 +4,7 @@ import * as targets from "aws-cdk-lib/aws-events-targets";
 import * as iam from "aws-cdk-lib/aws-iam";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
-import { RetentionDays } from "aws-cdk-lib/aws-logs";
+import * as logs from "aws-cdk-lib/aws-logs";
 import type { Construct } from "constructs";
 
 const resourceName = "aws-budget-notification";
@@ -17,10 +17,17 @@ export class AwsBudgetNotificationStack extends cdk.Stack {
       throw new Error("not set env `SLACK_WEBHOOK_URL`");
     }
 
+    const logGroup = new logs.LogGroup(this, `${resourceName}-log-group`, {
+      logGroupName: "/aws/lambda/podcast",
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      retention: logs.RetentionDays.THREE_MONTHS,
+    });
+
     const lambda = new NodejsFunction(this, `${resourceName}-lambda`, {
       runtime: Runtime.NODEJS_20_X,
       entry: "lambda/src/index.ts",
-      logRetention: RetentionDays.SIX_MONTHS,
+      logGroup,
+      timeout: cdk.Duration.minutes(3),
       environment: {
         SLACK_WEBHOOK_URL: slackWebhookUrl,
       },
